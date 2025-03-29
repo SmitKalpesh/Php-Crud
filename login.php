@@ -1,18 +1,26 @@
 <?php
-
-session_start();
+ session_start();
 include 'connect.php';
 
-if(isset($_POST['submit'])){
-    $user=$_POST['mail'];
-    $pass=$_POST['pass'];
-}
 
-$sql="SELECT * FROM `auth` where username='$user' AND  password='$pass' AND (type='ADMIN' OR type='MANAGER')";
+ $raw = file_get_contents('php://input');
+ $data = json_decode($raw, true);
+ 
+ if ($data) {
+     $_SESSION['username'] = $data['username'];
+     $_SESSION['password'] = $data['password'];
+     
+
+ }
+
+
+
+ 
+$sql="SELECT * FROM `auth` where username = '{$_SESSION['username']}' AND password = '{$_SESSION['password']}' AND (type='ADMIN' OR type='MANAGER')";
 $result=mysqli_query($con,$sql);
 
                                                                         
-   $sql1="SELECT * FROM `crud` where email='$user' AND  password='$pass'";;
+   $sql1="SELECT * FROM `crud` where email='{$_SESSION['username']}' AND  password='{$_SESSION['password']}'";;
    $result1=mysqli_query($con,$sql1);
 
   
@@ -33,9 +41,9 @@ $result=mysqli_query($con,$sql);
         header('location:user_data.php');
         exit();
     } 
-    else{
-        header('location:index.php');
-        exit();
-    }    
+        else{
+            header('location:index.php');
+            exit();
+        }    
 
 ?>
